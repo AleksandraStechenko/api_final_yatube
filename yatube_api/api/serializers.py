@@ -24,10 +24,10 @@ class CommentSerializer(serializers.ModelSerializer):
         read_only_fields = ('post',)
 
 
-class GroupSerializer(serializers.ModelSerializer): 
- 
-    class Meta: 
-        model = Group 
+class GroupSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Group
         fields = '__all__'
 
 
