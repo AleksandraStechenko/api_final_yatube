@@ -36,6 +36,7 @@ class Post(models.Model):
 
     class Meta:
         default_related_name = 'posts'
+        ordering = ['pub_date']
 
     def __str__(self):
         return self.text[:SHORT_TEXT_LENGTH]
@@ -61,7 +62,10 @@ class Comment(models.Model):
         default_related_name = 'comments'
 
     def __str__(self):
-        return self.text[:SHORT_TEXT_LENGTH]
+        return (f'Комментарий {self.text[:SHORT_TEXT_LENGTH]} '
+                f'от {self.author.username} '
+                f'к посту "{self.post.text[:SHORT_TEXT_LENGTH]}"'
+                )
 
 
 class Follow(models.Model):
@@ -77,6 +81,18 @@ class Follow(models.Model):
         on_delete=models.CASCADE,
         verbose_name='Подписан на'
     )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['user', 'following'],
+                name='unique_follower'
+            ),
+            models.CheckConstraint(
+                name='%(app_label)s_%(class)s_prevent_self_follow',
+                check=~models.Q(user=models.F('following')),
+            )
+        ]
 
     def __str__(self):
         return f'{self.user} подписан на {self.following}'
